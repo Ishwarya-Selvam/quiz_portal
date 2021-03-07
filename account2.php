@@ -23,6 +23,7 @@ echo '<span class="pull-right top title1" ><span class="log1"><span class="glyph
 if(@$_GET['q']== 'result' && @$_GET['eid']) 
 {
 
+
 $eid=@$_GET['eid'];
 $q=mysqli_query($con,"SELECT * FROM history WHERE eid='$eid' AND email='$email' " )or die('Error157');
 //echo  '';
@@ -35,22 +36,22 @@ $r=$row['sahi'];
 $qa=$row['level'];
 //echo '';
 }
-/*$q=mysqli_query($con,"SELECT * FROM rank WHERE  email='$email' " )or die('Error157');
+$q=mysqli_query($con,"SELECT * FROM rank WHERE  email='$email' " )or die('Error157');
 while($row=mysqli_fetch_array($q) )
 {
 $s=$row['score'];
-echo '<tr style="color:#990000"><td>Overall Score<span class="glyphicon glyphicon-stats" aria-hidden="true"></span></td><td>'.$s.'</td></tr>';
-}*/
+
+}
+$q23=mysqli_query($con,"SELECT * FROM quiz WHERE  eid='$eid' " )or die('Error208');
+while($row=mysqli_fetch_array($q23) )
+{
+$title=$row['title'];
+$tag=$row['tag'];
+}
 //echo '</table></div>';
-$html = '<div class="panel">
-<center><h1 class="title" style="color:#660033">Result</h1><center><br /><table class="table table-striped title1" style="font-size:20px;font-weight:1000;">
-<tr style="color:#66CCFF"><td>Total Questions</td><td>'.$qa.'</td></tr>
-      <tr style="color:#99cc32"><td>Correct Answer<span class="glyphicon glyphicon-ok-circle" aria-hidden="true"></span></td><td>'.$r.'</td></tr> 
-	  <tr style="color:red"><td>Wrong Answer<span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span></td><td>'.$w.'</td></tr>
-	  <tr style="color:#66CCFF"><td>Score<span class="glyphicon glyphicon-star" aria-hidden="true"></span></td><td>'.$s.'</td></tr></table></div>';
+
    
-
-
+/*
       $filename = date("d-m-Y H:i:s");
       require_once("vendor/autoload.php");
       $mpdf = new \Mpdf\Mpdf([
@@ -71,53 +72,59 @@ $data = [
 	
 	'Email'      => $email,
 	
-];
+];*/
 
 
 //Run the function
 
+require 'vendor/vendor/autoload.php';
+//require 'sendgrid-php/sendgrid-php.php';
+$apikey ="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";
+
+$email1 = new \SendGrid\Mail\Mail();
+$email1->setFrom("saadana.26@gmail.com", "Test To Certify");
+$email1->setSubject("Here is your quiz report");
+$email1->addTo($email,$name);
 
 
-function sendEmail($pdf,$data)
-    {
-       // Instantiation and passing `true` enables exceptions
+
+$email1->addContent("text/plain", "Congratulations ");
+/*$email->addContent(
+    "text/html", "<strong>and easy to do anywhere</strong>"
+);*/
 
 
-try {
-	$mail = new PHPMailer;
-    //Server settings
-    $mail->SMTPDebug = 2;                                       // Enable verbose debug output
-    $mail->isSMTP();                                            // Set mailer to use SMTP
-    $mail->Host       = 'smtp.gmail.com';  // Specify main and backup SMTP servers
-    $mail->SMTPAuth   = true;                                   // Enable SMTP authentication
-    $mail->Username   = 'saadana.264@gmail.com';                     // SMTP username
-    $mail->Password   = 'Classic@4321!';                               // SMTP password
-    $mail->SMTPSecure = 'tls';                                  // Enable TLS encryption, `ssl` also accepted
-    $mail->Port       = 587;                                    // TCP port to connect to
-
-    //Recipients
-    $mail->setFrom('test@email.com', 'Mailer');
-    $mail->addAddress($_SESSION['email']);
 
 
-    // Content
-    $mail->isHTML(true);                                  // Set email format to HTML
-    $mail->Subject = 'Here is the subject';
-    $mail->Body    = 'This is the HTML message body <b>in bold!</b>';
-    $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
-	// add pdf attachment in the email
+$email1->addContent(
+    "text/html", '<div class="panel">
+<center><h1 class="title" style="color:#660033">Result</h1><center><br /><table class="table table-striped title1" style="font-size:20px;font-weight:1000;"><tr style="color:#990000"><td>Quiz Title<span class="glyphicon glyphicon-stats" aria-hidden="true"></span></td><td>'.$title.'</td></tr><tr style="color:#990000"><td>Quiz Category <span class="glyphicon glyphicon-stats" aria-hidden="true"></span></td><td>'.$tag.'</td></tr>
+<tr style="color:#66CCFF"><td>Total Questions</td><td>'.$qa.'</td></tr>
+      <tr style="color:#99cc32"><td>Correct Answer<span class="glyphicon glyphicon-ok-circle" aria-hidden="true"></span></td><td>'.$r.'</td></tr> 
+	  <tr style="color:red"><td>Wrong Answer<span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span></td><td>'.$w.'</td></tr>
+	  <tr style="color:#66CCFF"><td>Score<span class="glyphicon glyphicon-star" aria-hidden="true"></span></td><td>'.$s.'</td></tr><tr style="color:#990000"><td>Overall Score<span class="glyphicon glyphicon-stats" aria-hidden="true"></span></td><td>'.$s.'</td></tr></table></div>');
+//$email1->addContent(
+    //"text/html",'<tr style="color:#990000"><td>Overall Score<span class="glyphicon glyphicon-stats" aria-hidden="true"></span></td><td>'.$s.'</td></tr>');
 
-     $mail->addStringAttachment($pdf,"myreport.pdf");
+/*$content    = file_get_contents($pdf);
+$content    = chunk_split(base64_encode($content));
 
-    $mail->send();
-    echo 'Message has been sent';
-} catch (Exception $e) {
-    echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+$pdf = new Attachment();
+$pdf->setContent($content);
+$pdf->setType("application/pdf");
+$pdf->setFilename("RenamedFile.pdf");
+$pdf->setDisposition("pdf");*/
+//$file_encoded = base64_encode(file_get_contents('output.pdf', $pdf));
+
+$sendgrid = new \SendGrid($apikey);
+if($sendgrid->send($email1));
+{
+ echo "Report has been sent you email,click username to take another quiz or click signout!";
 }
-    }
+
+ 
     
 
-sendEmail($pdf,$data);
 
 
 

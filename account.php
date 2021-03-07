@@ -424,7 +424,7 @@ if(@$_GET['q']== 'result' && @$_GET['eid'])
 $eid=@$_GET['eid'];
 $q=mysqli_query($con,"SELECT * FROM history WHERE eid='$eid' AND email='$email' " )or die('Error157');
 echo  '<div class="panel">
-<center><h1 class="title" style="color:#660033">Result</h1><center><br /><table class="table table-striped title1" style="font-size:20px;font-weight:1000;">';
+<center><b><a href="account2.php?q=result&eid='.$eid.'" class="pull-right btn sub1" style="margin:0px;background:#99cc32"><span class="glyphicon glyphicon-new-window" aria-hidden="true"></span>&nbsp;<span class="title1"><b>Click Here to send Generated Report To Your Email</b></span></a></b><h1 class="title" style="color:#660033">Result</h1><center><br /><table class="table table-striped title1" style="font-size:20px;font-weight:1000;">';
 
 while($row=mysqli_fetch_array($q) )
 {
@@ -486,7 +486,7 @@ echo '<font style="font-size:20px;color:darkgreen"><b>*</b></font><font style="f
     
 
 }
-echo '<b><a href="account2.php?q=result&eid='.$eid.'" class="pull-right btn sub1" style="margin:0px;background:#99cc32"><span class="glyphicon glyphicon-new-window" aria-hidden="true"></span>&nbsp;<span class="title1"><b>Generate Report</b></span></a></b>';
+//echo '<b><a href="account2.php?q=result&eid='.$eid.'" class="pull-right btn sub1" style="margin:0px;background:#99cc32"><span class="glyphicon glyphicon-new-window" aria-hidden="true"></span>&nbsp;<span class="title1"><b>Generate Report</b></span></a></b>';
 }
 ?>
 <!--quiz end-->

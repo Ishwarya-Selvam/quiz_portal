@@ -70,7 +70,7 @@ for($i=1;$i<=$n;$i++)
  $qid=uniqid();
  $qns=$_POST['qns'.$i];
 $details=$_POST['details'.$i];
-$q3=mysqli_query($con,"INSERT INTO questions VALUES  ('$eid','$qid','$qns' ,'$details', '$ch' , '$i')");
+$q3=mysqli_query($con,"INSERT INTO questions VALUES  ('$eid','$qid','$qns' , '$ch' , '$i','$details')");
   $oaid=uniqid();
   $obid=uniqid();
 $ocid=uniqid();
@@ -123,108 +123,100 @@ if(isset($_SESSION['key'])){
   $desc = $_POST['desc'];
   $id=uniqid();
   $q3=mysqli_query($con,"INSERT INTO quiz VALUES  ('$id','$name' , '$sahi' , '$wrong','$total','$time' ,'$desc','$tag', NOW())");
-  
-if(isset($_POST["submit"]))
+$output = '';
+echo '<script>console.log("Welcome to GeeksforGeeks!"); </script>';
+if(@$_GET['q']== 'upldquiz' && $_SESSION['key']=='sunny7785068889')
 {
-   
-$file =$_FILES['file']['tmp_name'];
-$handle = fopen($file, "r");
+echo '<script>console.log("Welcome to GeeksforGeeks1111111!"); </script>';
+ $extension = end(explode(".", $_FILES["excel"]["name"])); // For getting Extension of selected file
+ $allowed_extension = array("xls", "xlsx", "csv"); //allowed extension
+ if(in_array($extension, $allowed_extension)) //check selected file extension is present in allowed extension array
+ {
+echo '<script>console.log("Welcome to GeeksforGeeks!222222"); </script>';
+  $file = $_FILES["excel"]["tmp_name"]; // getting temporary source of excel file
 
-convertXLStoCSV($file,'output.csv');
+  include("PHPExcel/IOFactory.php"); // Add PHPExcel Library in this code
+  $objPHPExcel = PHPExcel_IOFactory::load($file); // create object of PHPExcel library by using load() method and in load method define path of selected file
 
-}
-function convertXLStoCSV($infile,$outfile)
-{
-    $fileType = PHPExcel_IOFactory::identify($infile);
-    $objReader = PHPExcel_IOFactory::createReader($fileType);
- 
-    $objReader->setReadDataOnly(true);   
-    $objPHPExcel = $objReader->load($infile);    
- 
-    $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'CSV');
-    ob_end_clean();
-$objWriter->save($outfile);
-    $handle1 = fopen($outfile, "r");
-$c = 0;
-//$eeid=uniqid();
-$sntest =0;
-while(($filesop = fgetcsv($handle1, 1000, ",")) !== false)
-          {
-$f1 = uniqid();
-$f2 = $filesop[1];
-$f3 = $filesop[2];
-$f4 = $filesop[3];
-$f5 = $filesop[4];
-$f6 = $filesop[5];
-$f7 = strtolower($filesop[6]);
-$f8 = $filesop[7];
-$f9 = uniqid();
-$f10 = uniqid();
-$f11 = uniqid();
-$f12 = uniqid();
-$sntest++;
-switch($f7)
-{
-case 'option a':
-$ansid=$f9;
-break;
-case 'option b':
-$ansid=$f10;
-break;
-case 'option c':
-$ansid=$f11;
-break;
-case 'option d':
-$ansid=$f12;
-break;
-default:
-$ansid=$f9;
-}
+  //$output .= "<label class='text-success'>Data Added: </label><br /><table class='table table-bordered'>";
+  foreach ($objPHPExcel->getWorksheetIterator() as $worksheet)
+  {$iter = 1;
+    $f1=uniqid();
+   $highestRow = $worksheet->getHighestRow();
+   for($row=2; $row<=$highestRow; $row++)
+   {
+    $sno = mysqli_real_escape_string($con, $worksheet->getCellByColumnAndRow(0, $row)->getValue());
+    $qns1 = mysqli_real_escape_string($con, $worksheet->getCellByColumnAndRow(1, $row)->getValue());
+    $optiona = mysqli_real_escape_string($con, $worksheet->getCellByColumnAndRow(2, $row)->getValue());
+    $optionb = mysqli_real_escape_string($con, $worksheet->getCellByColumnAndRow(3, $row)->getValue());
+    $optionc = mysqli_real_escape_string($con, $worksheet->getCellByColumnAndRow(4, $row)->getValue());
+    $optiond = mysqli_real_escape_string($con, $worksheet->getCellByColumnAndRow(5, $row)->getValue());
+    $ans =  mysqli_real_escape_string($con, $worksheet->getCellByColumnAndRow(6, $row)->getValue());
+    $details1 = mysqli_real_escape_string($con, $worksheet->getCellByColumnAndRow(7, $row)->getValue());
+    $f8 = uniqid();
+    $f9 = uniqid();
+    $f10 = uniqid();
+    $f11 = uniqid();
+    $f12 = uniqid();
 
-$sql1=mysqli_query($con,"insert into questions(eid,qid,qns,details,choice,sn) values ('$id','$f1','$f2','$f8',4,'$sntest')");
-$sql2=mysqli_query($con,"insert into options(qid,optionn,optionid) values ('$f1','$f3','$f9')");
-$sql3=mysqli_query($con,"insert into options(qid,optionn,optionid) values ('$f1','$f4','$f10')");
-$sql4=mysqli_query($con,"insert into options(qid,optionn,optionid) values ('$f1','$f5','$f11')");
-$sql5=mysqli_query($con,"insert into options(qid,optionn,optionid) values ('$f1','$f6','$f12')");
-$sql6=mysqli_query($con,"INSERT INTO answer (qid,ansid) VALUES  ('$f1','$ansid')");
-/*
-$sql1 = "insert into questions(eid,qid,qns,details,choice,sn) values ('$id','$f1','$f2','$f8',4,'$sntest')";
-$sql2 = "insert into options(qid,optionn,optionid) values ('$f1','$f3','$f9')";
-$sql3 = "insert into options(qid,optionn,optionid) values ('$f1','$f4','$f10')";
-$sql4 = "insert into options(qid,optionn,optionid) values ('$f1','$f5','$f11')";
-$sql5 = "insert into options(qid,optionn,optionid) values ('$f1','$f6','$f12')";
-$sql6 = "INSERT INTO answer (qid,ansid) VALUES  ('$f1','$ansid')";
-// $sql = "insert into employeeinfo(emp_id,firstname,lastname,email,reg_date) values ('$f1','$f2','$f3','$f4','$f5')";
-// $stmt = mysqli_prepare($conn,$sql);
- $stmt1 = mysqli_prepare($con,$sql1);
- mysqli_stmt_execute($stmt1);
-$stmt2 = mysqli_prepare($con,$sql2);
-mysqli_stmt_execute($stmt2);
-$stmt3 = mysqli_prepare($con,$sql3);
-mysqli_stmt_execute($stmt3);
-$stmt4 = mysqli_prepare($con,$sql4);
-mysqli_stmt_execute($stmt4);
-$stmt5 = mysqli_prepare($con,$sql5);
-mysqli_stmt_execute($stmt5);
-$stmt6 = mysqli_prepare($con,$sql6);
- mysqli_stmt_execute($stmt6);
-*/
-// mysqli_stmt_execute($stmt);
-$c = $c + 1;
+    switch(strtolower($ans))
+    {
+      case 'option a':
+      $ansid=$f9;
+      break;
+      case 'option b':
+      $ansid=$f10;
+      break;
+      case 'option c':
+      $ansid=$f11;
+      break;
+      case 'option d':
+      $ansid=$f12;
+      break;
+      default:
+      $ansid=$f9;
+      }
+    if(!empty($sno) || !empty($qns)) // if none of the data are empty
+    {
+      //$output .= "<tr>";
+      $query1 = "INSERT INTO questions VALUES ('$id', '$f8','$qns1','4','$iter')";
+      mysqli_query($con, $query1);
+      $query2 = "INSERT INTO options(qid,option,optionid) VALUES ('$f8', '$optiona','$f9')";
+      mysqli_query($con, $query2);
+      $query3 = "INSERT INTO options(qid,option,optionid) VALUES ('$f8', '$optionb','$f10')";
+      mysqli_query($con, $query3);
+      $query4 = "INSERT INTO options(qid,option,optionid) VALUES ('$f8', '$optionc','$f11')";
+      mysqli_query($con, $query4);
+      $query5 = "INSERT INTO options(qid,option,optionid) VALUES ('$f8', '$optiond','$f12')";
+      mysqli_query($con, $query5);
+      $query6 = "INSERT INTO answer(qid,ansid) VALUES ('$sno', '$ansid')";
+      mysqli_query($con, $query6);
+      //$output .= '<td>'.$sno.'</td>';
+      //$output .= '<td>'.$qns1.'</td>';
+      //$output .= '</tr>';
+    }
+    $iter++; 
+   }
+  } 
+  //$output .= '</table>';
+  $target_dir = "uploads/"; //file upload folder
+  $target_file = $target_dir .time().basename($_FILES["excel"]["name"]); // target file to be uploaded
+
+  //upload the file
+  if (move_uploaded_file($_FILES["excel"]["tmp_name"], $target_file)) {
+       $fileUploadMsg= "<label class='text-success'>The file has been uploaded Successfully!</label><br>";
+    } else {
+       $fileUploadMsg= '<label class="text-danger">Sorry, there was an error uploading your file!</label><br>';
+    }
+
  }
-
- 
-
-  if($sql1 && $sql2 && $sql6){
-     echo "sucess";
-   } 
-else
-{
-  echo "Sorry! Unable to impo.";
-}
-}
+ else
+ {
+  //$output = '<label class="text-danger">Invalid File</label>'; //if non excel file then
+ }
+}  
 $q7=mysqli_query($con,"UPDATE quiz SET total='$sntest' WHERE eid='$id'");
-  header("location:dash.php?q=0");
+  header("location:Excel-to-MySQL-Importer-and-Exporter-in-PHP-using-PHPExcel");
   }
   }
   

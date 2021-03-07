@@ -1,0 +1,9 @@
+<?php
+
+     echo 'Hello';
+	try{
+      echo '<script>console.log("Welcome to GeeksforGeeks!"); </script>';  
+include_once(FCPATH.'PHPMailer/src/PHPMailer.php');
+  include_once(FCPATH.'PHPMailer/src/SMTP.php');
+  include_once(FCPATH.'PHPMailer/src/Exception.php');
+	
